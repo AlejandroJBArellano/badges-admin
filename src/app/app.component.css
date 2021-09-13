@@ -1,0 +1,14 @@
+.next{
+	background: red;
+}
+.cursor{
+	background-color: red;
+	color:white;
+	animation: blinker 1s linear infinite;
+}
+
+@keyframes blinker {
+  50% {
+    opacity: 0;
+  }
+}

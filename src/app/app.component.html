@@ -1,0 +1,90 @@
+<div class="main-content">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-6">
+        <h1 >Region 1005 Zona 46</h1> 
+        
+      </div>
+      <div class="col-md-2">
+        <a href="#" class="btn btn-primary float-end">SELECCIONAR</a>
+      </div>
+      <div class="col-md-4">
+        <a href="#" class="btn btn-success btn-lg float-end">INICIAR PROCESO</a>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-10">
+        <div class="card">
+          <div class="card-body" style="max-height: 600px; overflow: scroll;">
+            <h5 class="card-title">Card title</h5>
+            <table class="table">
+              <thead>
+                <tr >
+                  <th scope="col">#</th>
+                  <th scope="col">Region</th>
+                  <th scope="col">Zona</th>
+                  <th scope="col">Distrito</th>
+                  <th scope="col">Tienda</th>
+                  <th scope="col">Perfil</th>
+                  <th scope="col">Gafete</th>
+                  <th scope="col">TagID</th>
+                  <th scope="col">Nombre</th>
+                  <th scope="col">Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let attendee of attendees; index as i;" >
+                  <th>{{i+1}}</th>
+                  <th>1005</th>
+                  <td>46</td>
+                  <td>162</td>
+                  <td>1100PUEXicotepec2</td>
+                  <td>asistente</td>
+                  <td>{{attendee.badge}}</td>
+                  <td>{{attendee.tag_id}}</td>
+                  <td>Humberto Juarez Mora</td>
+                  <td>
+                    <span *ngIf="attendee.isNext" class="cursor">***</span>
+                    <button *ngIf="attendee.tag_id" class="btn btn-sm btn-secondary" style="margin-right: 2px;"
+                    (click)="printBadge(attendee)">reimprimir</button>
+                    <button *ngIf="attendee.tag_id" class="btn btn-sm btn-secondary">Cambiar TAG</button>
+                  </td>
+                 
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-2">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Setup</h5>
+            <p class="card-text">Selecciona lectora e impresora.</p>
+            <select>
+              <option>Pulso054</option>
+              <option>Pulso054</option>
+              <option>Pulso054</option>
+            </select>
+            <select>
+              <option>Printer001</option>
+              <option>Printer001</option>
+              <option>Printer001</option>
+            </select>
+            <button class="btn  btn-outline-dark">{{last_tag_id}}</button>
+            <a href="#" class="btn btn-primary">Conectar</a>
+          </div>
+        </div>
+        <div class="card" style="margin-top:10px">
+          <div class="card-body">
+            <h5 class="card-title">Instrucciones</h5>
+            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<router-outlet></router-outlet>
