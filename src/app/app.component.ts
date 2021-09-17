@@ -109,6 +109,11 @@ export class AppComponent implements OnInit,OnDestroy {
               this.zonas.push(zona)
             }
           })
+
+          let almacen = {
+            viewValue:'CEDIS',value:'CEDIS'
+          }
+          this.zonas.push(almacen)
         })
     })
     this.lectoraFC.valueChanges.subscribe((lectora:any) => {
@@ -121,9 +126,17 @@ export class AppComponent implements OnInit,OnDestroy {
     this.apiService.getUsersByRegion(this.regionFC.value).subscribe((users:any)=>{
       
       this.working=false;
-
+      console.log("unfiltered attendees",users)
       this.attendees = users
-      .filter((user:any)=>user.organization_role.zona == this.zonaFC.value);
+      .filter((user:any)=>{
+        let zona = this.zonaFC.value;
+        let inZone = user.organization_role.zona == zona
+        if(zona=="CEDIS"){
+          inZone = !user.organization_role.zona
+        }
+        return inZone
+      });
+
       this.attendees.forEach((attendee:any)=>{
           if(!attendee.organization_role.distrito){
             attendee.organization_role.distrito='-';
@@ -141,6 +154,7 @@ export class AppComponent implements OnInit,OnDestroy {
         || a.organization_role.distrito.localeCompare(b.organization_role.distrito)
         || a.user_role.role.localeCompare(b.user_role.role)
         || a.organization_role.tienda.localeCompare(b.organization_role.tienda)
+        || a.organization_role.area.localeCompare(b.organization_role.area)
          ));
       
       //PEDIR LOS DATOS DE TAGS
@@ -296,7 +310,7 @@ export class AppComponent implements OnInit,OnDestroy {
 
 
   unsafePublish(topic: string, message: string): void {
-    this._mqttService.unsafePublish(topic, message, {qos: 0, retain: true});
+    this._mqttService.unsafePublish(topic, message, {qos: 0, retain: false});
   }
 
 
