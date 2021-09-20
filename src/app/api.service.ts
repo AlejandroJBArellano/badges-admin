@@ -49,9 +49,14 @@ export class APIService {
     return this.http.get<any>(reqURL,options);
   }
 
-  getBadgesByZona(zona:string):Observable<any>{
+  getBadgesByRegionZona(region:string,zona:string):Observable<any>{
     let reqURL = environment.apiBaseURL+'/tag_id-users/all';
-    let options = { params: new HttpParams().set('zona', zona) }
+    let params = new HttpParams()
+    .set("region",region)
+    .set("zona",zona)
+    let options = { params: params }
+    console.log("options",options)
+    console.log("params",params.toString())
     return this.http.get<any>(reqURL,options);
   }
 

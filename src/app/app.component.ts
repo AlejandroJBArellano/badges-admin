@@ -98,6 +98,8 @@ export class AppComponent implements OnInit,OnDestroy {
 
 
     this.regionFC.valueChanges.subscribe(region => {
+
+      if(region!='corporativo'){
         this.apiService.getStoresByRegion(region).subscribe(stores =>{
           console.log("stores",stores)
           this.zonas = [];
@@ -115,6 +117,16 @@ export class AppComponent implements OnInit,OnDestroy {
           }
           this.zonas.push(almacen)
         })
+      }else{
+        this.zonas = [
+          {
+                viewValue:"directivos",value:"9999"
+          }
+        ];
+      }
+
+
+
     })
     this.lectoraFC.valueChanges.subscribe((lectora:any) => {
       this.selectReader();
@@ -144,6 +156,9 @@ export class AppComponent implements OnInit,OnDestroy {
           if(!attendee.organization_role.tienda){
             attendee.organization_role.tienda='-';
           }
+          if(!attendee.organization_role.zona){
+            attendee.organization_role.zona='';
+          }
 
       })
 
@@ -158,8 +173,11 @@ export class AppComponent implements OnInit,OnDestroy {
          ));
       
       //PEDIR LOS DATOS DE TAGS
-
-      this.apiService.getBadgesByZona( this.zonaFC.value).subscribe(badges=>{
+      let zona = this.zonaFC.value
+      if(zona == "CEDIS"){
+        zona = '';
+      }
+      this.apiService.getBadgesByRegionZona(this.regionFC.value, zona).subscribe(badges=>{
 
         this.attendees.forEach((attendee:any)=>{
           let badge =badges.find( (badge:any) => badge.user_id == attendee._id);
@@ -169,18 +187,12 @@ export class AppComponent implements OnInit,OnDestroy {
         })
 
         this.cursor=0;
-        while(this.attendees[this.cursor].tag_id){
-          this.cursor++;
-        }
-        console.log("cursor",this.cursor);
         this.attendees[this.cursor].isNext=true;
-        let elements = document.getElementsByClassName("cursor")
-        if(elements.length>0){
-          let el = elements.item(0)
-          if(el){
-            el.scrollIntoView({block: "start", behavior: "smooth"});
-          }
-        }
+        
+        this.updateCursor();
+        
+        console.log("cursor",this.cursor);
+
 
       })
 
@@ -225,18 +237,7 @@ export class AppComponent implements OnInit,OnDestroy {
 
             this.attendees[this.cursor].tag_id = info.tag_id
             console.log("modified user:",this.attendees[this.cursor]);
-            delete this.attendees[this.cursor].isNext;
-            this.cursor++;
-            this.attendees[this.cursor].isNext=true;
-            if(this.cursor%10==0){
-              let elements = document.getElementsByClassName("cursor")
-              if(elements.length>0){
-                let el = elements.item(0)
-                if(el){
-                  el.scrollIntoView({block: "start", behavior: "smooth"});
-                }
-              }
-            }
+            this.advanceCursor();
           },
           error=>{
             console.log("error:",error)
@@ -313,5 +314,41 @@ export class AppComponent implements OnInit,OnDestroy {
     this._mqttService.unsafePublish(topic, message, {qos: 0, retain: false});
   }
 
+  advanceCursor(){
+    if(this.attendees[this.cursor].isNext){
+        delete this.attendees[this.cursor].isNext;  
+    }
+    this.cursor++;
+    this.attendees[this.cursor].isNext=true;
+    if(this.cursor%10==0){
+      let elements = document.getElementsByClassName("cursor")
+      if(elements.length>0){
+        let el = elements.item(0)
+        if(el){
+                  el.scrollIntoView({block: "start", behavior: "smooth"});
+        }
+      }
+    }
+    this.updateCursor()
+    
+  }
+  updateCursor(){
+    while(this.attendees[this.cursor].tag_id){
+      if(this.attendees[this.cursor].isNext){
+        delete this.attendees[this.cursor].isNext;  
+      }
+      this.cursor++;
+      this.attendees[this.cursor].isNext=true;
+      if(this.cursor%10==0){
+        let elements = document.getElementsByClassName("cursor")
+        if(elements.length>0){
+          let el = elements.item(0)
+          if(el){
+                    el.scrollIntoView({block: "start", behavior: "smooth"});
+          }
+        }
+      }
+    }
+  }
 
 }
