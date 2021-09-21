@@ -121,6 +121,9 @@ export class AppComponent implements OnInit,OnDestroy {
         this.zonas = [
           {
                 viewValue:"directivos",value:"9999"
+          },
+          {
+                viewValue:"coporativo",value:"6666"
           }
         ];
       }
