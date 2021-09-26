@@ -4,10 +4,10 @@
 
 export const environment = {
   production: false,
-  mqttServer: '10.10.100.50',
+  mqttServer: 'http://10.10.2.1',
   mqttPath: '/',
   mqttPort: 1884,
-  apiBaseURL:'http://localhost:3000'
+  apiBaseURL:'http://10.10.2.1:3000'
 };
 
 /*

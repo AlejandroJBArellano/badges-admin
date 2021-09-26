@@ -162,6 +162,9 @@ export class AppComponent implements OnInit,OnDestroy {
           if(!attendee.organization_role.zona){
             attendee.organization_role.zona='';
           }
+          if(!attendee.organization_role.area){
+            attendee.organization_role.area='';
+          }
 
       })
 
