@@ -20,11 +20,6 @@ export class AppComponent implements OnInit,OnDestroy {
 
   subscription: any = null;
 
-  MQTT_PRINTER_BASE_CMD_TOPIC: string = 'inpulse/cmd/pulses'
-  MQTT_PRINTER_ASSIGNMENT_BASE_TOPIC: string = 'print-label/empaquetado'
-  selectedPrinter:string = 'printer001'
-  selectedStation:string = 'estacion-1'
-
   MQTT_READER_BASE_DT_TOPIC: string = 'inpulse/readers'
   selectedReader:string = 'pulso054'
   MQTT_READER_ASSIGNMENT_TOPIC:string = 'events/tag_readed'
@@ -47,23 +42,29 @@ export class AppComponent implements OnInit,OnDestroy {
     {viewValue:'1007',value:'1007'},
     {viewValue:'1008',value:'1008'},
     {viewValue:'1009',value:'1009'},
-    {viewValue:'corporativo',value:'corporativo'}
+    {viewValue:'corporativo',value:'corporativo'},
+    {viewValue:'expositores',value:'expositores'}
   ]
   zonas:any = []
-  lectoras:any = [
-    {viewValue:'pulso047',value:'inpulse/readers/pulso047/events/tag_readed'},
-    {viewValue:'pulso054',value:'inpulse/readers/pulso054/events/tag_readed'},
-    {viewValue:'pulso059',value:'inpulse/readers/pulso059/events/tag_readed'},
-    {viewValue:'pulso061',value:'inpulse/readers/pulso061/events/tag_readed'},
-    {viewValue:'pulso070',value:'inpulse/readers/pulso070/events/tag_readed'},
-    {viewValue:'pulso096',value:'inpulse/readers/pulso096/events/tag_readed'}
+lectoras:any = [
+    {viewValue:'Pulso016',value:'inpulse/dt/pulses/Pulso016/tag-id'},
+    {viewValue:'Pulso075',value:'inpulse/dt/pulses/Pulso075/tag-id'},
+    {viewValue:'Pulso073',value:'inpulse/dt/pulses/Pulso073/tag-id'},
+    {viewValue:'Pulso048',value:'inpulse/dt/pulses/Pulso048/tag-id'},
+    {viewValue:'Pulso024',value:'inpulse/dt/pulses/Pulso024/tag-id'}
   ]
   impresoras:any = [
     {viewValue:'lime',value:'inpulse/cmd/pulses/printer001/print-label/empaquetado/estacion-1'},
     {viewValue:'lemon',value:'inpulse/cmd/pulses/printer002/print-label/empaquetado/estacion-2'},
     {viewValue:'apple',value:'inpulse/cmd/pulses/printer003/print-label/empaquetado/estacion-3'},
     {viewValue:'pear',value:'inpulse/cmd/pulses/printer004/print-label/empaquetado/estacion-4'},
-    {viewValue:'fig',value:'inpulse/cmd/pulses/printer005/print-label/empaquetado/estacion-5'}
+    {viewValue:'fig',value:'inpulse/cmd/pulses/printer005/print-label/empaquetado/estacion-5'},
+
+    {viewValue:'Pulso016',value:'inpulse/cmd/pulses/printer016/print-label/print'},
+    {viewValue:'Pulso075',value:'inpulse/cmd/pulses/printer075/print-label/print'},
+    {viewValue:'Pulso073',value:'inpulse/cmd/pulses/printer073/print-label/print'},
+    {viewValue:'Pulso048',value:'inpulse/cmd/pulses/printer048/print-label/print'},
+    {viewValue:'Pulso024',value:'inpulse/cmd/pulses/printer024/print-label/print'}
   ]
 
   regionFC = new FormControl();
@@ -149,6 +150,10 @@ export class AppComponent implements OnInit,OnDestroy {
         if(zona=="CEDIS"){
           inZone = !user.organization_role.zona
         }
+        if(this.regionFC.value == 'expositores'){
+          inZone = true
+
+        }
         return inZone
       });
 
@@ -183,10 +188,14 @@ export class AppComponent implements OnInit,OnDestroy {
       if(zona == "CEDIS"){
         zona = '';
       }
+      if( !zona ){
+        zona = ''
+      }
       this.apiService.getBadgesByRegionZona(this.regionFC.value, zona).subscribe(badges=>{
 
         this.attendees.forEach((attendee:any)=>{
           let badge =badges.find( (badge:any) => badge.user_id == attendee._id);
+
           if(badge){
              attendee.tag_id=badge.tag_id
           }
@@ -258,7 +267,7 @@ export class AppComponent implements OnInit,OnDestroy {
           this.apiService.getBadgeByTagId(this.last_tag_id)
           .subscribe((user:any)=>{
             console.log("user by tag_id",user)
-            if(user){
+            if(user && user._id){
               let info = `USUARIO ENCONTRADO
 
               nombre: ${user.first_name} ${user.last_name}
@@ -286,11 +295,12 @@ export class AppComponent implements OnInit,OnDestroy {
 
   printBadge(attendee:any){
     if(attendee.badge=="azul" ||
-      attendee.badge=="negro" ||
-      attendee.badge=="amarillo"){
+      attendee.badge=="negro" ){
       this.printManagerBadge(attendee);  
     }else if (attendee.badge=="rojo" ){
       this.printAttendeeBadge(attendee);  
+    }else if (attendee.badge=="amarillo"){
+      this.printExhibitorBadge(attendee)
     }
   }
 
@@ -314,12 +324,34 @@ export class AppComponent implements OnInit,OnDestroy {
     this.unsafePublish(this.impresoraFC.value,JSON.stringify(cmd))
   }
 
+  printExhibitorBadge(user:any){
+    let cmd ={
+      print_type: this.PRINT_TYPE_TITLE_AND_2LINES,
+      title: this.titleCasePipe.transform(user.first_name) + ' ' + this.titleCasePipe.transform(user.last_name),
+      line1: user.organization_role.tienda,    
+      line2: ''
+    }
+    console.log("print attendee",cmd);
+    this.unsafePublish(this.impresoraFC.value,JSON.stringify(cmd))
+  }
 
 
   unsafePublish(topic: string, message: string): void {
     this._mqttService.unsafePublish(topic, message, {qos: 0, retain: false});
   }
 
+  advanceCursor10(){
+    this.advanceCursor()
+    this.advanceCursor()
+    this.advanceCursor()
+    this.advanceCursor()
+    this.advanceCursor()
+    this.advanceCursor()
+    this.advanceCursor()
+    this.advanceCursor()
+    this.advanceCursor()
+    this.advanceCursor()
+  }
   advanceCursor(){
     if(this.attendees[this.cursor].isNext){
         delete this.attendees[this.cursor].isNext;  

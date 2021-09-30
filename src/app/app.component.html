@@ -18,7 +18,7 @@
             </mat-option>
           </mat-select>
         </mat-form-field>
-        <button  class="btn btn-primary btn-lg float-start" (click)="selectRegionZona()" [disabled]="!zonaFC.value">SELECCIONAR</button>
+        <button  class="btn btn-primary btn-lg float-start" (click)="selectRegionZona()" >SELECCIONAR</button>
       </div>
     </div>
     <div class="row">
@@ -95,11 +95,12 @@
             <button  class="btn btn-success btn-lg float-end" (click)="startWorking()" [disabled]="attendees.length==0" *ngIf="!working">INICIAR PROCESO</button>
             <button  class="btn btn-danger btn-lg float-end" (click)="stopWorking()" *ngIf="working">PAUSAR PROCESO</button>
             <button  class="btn btn-primary btn-lg float-end" (click)="advanceCursor()" >AVANZAR CURSOR</button>
+            <button  class="btn btn-primary btn-lg float-end" (click)="advanceCursor10()" >AVANZAR CURSOR 10</button>
           </div>
         </div>
         <div class="card" style="margin-top:10px">
           <div class="card-body">
-            <h5 class="card-title">Instrucciones v1.3</h5>
+            <h5 class="card-title">Instrucciones v1.5</h5>
             <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
           </div>
         </div>
