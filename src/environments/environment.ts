@@ -7,7 +7,7 @@ export const environment = {
   mqttServer: '10.10.2.1',
   mqttPath: '/',
   mqttPort: 1884,
-  apiBaseURL:'http://10.10.2.1:3000'
+  apiBaseURL:'http://localhost:3000'
 };
 
 /*

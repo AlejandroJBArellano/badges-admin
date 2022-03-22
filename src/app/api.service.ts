@@ -12,14 +12,16 @@ export class APIService {
 
   constructor(private http: HttpClient) { }
 
-  getUsersByTienda(tienda:string):Observable<any>{
-    let reqURL = environment.apiBaseURL+'/tienda';
-    return this.http.get<any>(reqURL);
+  getUsersByEstado(estado:string):Observable<any>{
+    let reqURL = environment.apiBaseURL+'/estado';
+    return this.http.get<any>(reqURL, {
+      params: new HttpParams().set('estado', estado)
+    });
   }
 
-  getUsersByRegion(region:string):Observable<any>{
-    let reqURL = environment.apiBaseURL+'/region';
-    let options = { params: new HttpParams().set('region', region) }
+  getUsersByEmpresa(empresa:string):Observable<any>{
+    let reqURL = environment.apiBaseURL+'/empresa';
+    let options = { params: new HttpParams().set('empresa', empresa) }
     return this.http.get<any>(reqURL,options);
   }
 
@@ -28,9 +30,9 @@ export class APIService {
     return this.http.get<any>(reqURL);
   }
 
-  getStoresByRegion(region:string):Observable<any>{
+  getStoresByEmpresa(empresa:string):Observable<any>{
     let reqURL = environment.apiBaseURL+'/stores';
-    let options = { params: new HttpParams().set('region', region) }
+    let options = { params: new HttpParams().set('empresa', empresa) }
     return this.http.get<any>(reqURL,options);
   }
 
@@ -49,11 +51,10 @@ export class APIService {
     return this.http.get<any>(reqURL,options);
   }
 
-  getBadgesByRegionZona(region:string,zona:string):Observable<any>{
+  getBadgesByEstado(estado:string):Observable<any>{
     let reqURL = environment.apiBaseURL+'/tag_id-users/all';
     let params = new HttpParams()
-    .set("region",region)
-    .set("zona",zona)
+    .set("estado",estado)
     let options = { params: params }
     console.log("options",options)
     console.log("params",params.toString())
@@ -63,6 +64,15 @@ export class APIService {
   getUserBytTagId(tag_id:string):Observable<any>{
     let reqURL = environment.apiBaseURL+'/stores';
     let options = { params: new HttpParams().set('tag_id', tag_id) }
+    return this.http.get<any>(reqURL,options);
+  }
+  getEstadosValidos(){
+    const reqURL = environment.apiBaseURL+'/estados';
+    return this.http.get<string[]>(reqURL)
+  }
+  getStoresByEstado(estado:string):Observable<any>{
+    let reqURL = environment.apiBaseURL+'/stores';
+    let options = { params: new HttpParams().set('estado', estado) }
     return this.http.get<any>(reqURL,options);
   }
 }

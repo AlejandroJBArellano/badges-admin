@@ -31,8 +31,8 @@ export class AppComponent implements OnInit,OnDestroy {
   attendees:any = [];
   cursor:number = 0;
   last_tag_id:any='00000000';
-  regiones:any = [
-    {viewValue:'1000',value:'1000'},
+  estados:any = [
+    {viewValue:'Homely',value:'Homely'},
     {viewValue:'1001',value:'1001'},
     {viewValue:'1002',value:'1002'},
     {viewValue:'1003',value:'1003'},
@@ -45,8 +45,10 @@ export class AppComponent implements OnInit,OnDestroy {
     {viewValue:'corporativo',value:'corporativo'},
     {viewValue:'expositores',value:'expositores'}
   ]
-  zonas:any = []
-lectoras:any = [
+  titulos:any = [
+    {value: 'CEO', viewValue: 'CEO'}
+  ]
+  lectoras:any = [
     {viewValue:'Pulso016',value:'inpulse/dt/pulses/Pulso016/tag-id'},
     {viewValue:'Pulso075',value:'inpulse/dt/pulses/Pulso075/tag-id'},
     {viewValue:'Pulso073',value:'inpulse/dt/pulses/Pulso073/tag-id'},
@@ -67,8 +69,8 @@ lectoras:any = [
     {viewValue:'Pulso024',value:'inpulse/cmd/pulses/printer024/print-label/print'}
   ]
 
-  regionFC = new FormControl();
-  zonaFC = new FormControl();
+  estadoFC = new FormControl();
+  tituloFC = new FormControl();
   lectoraFC = new FormControl();
   impresoraFC = new FormControl();
 
@@ -93,109 +95,67 @@ lectoras:any = [
     });
   }
 
-  
+
 
   ngOnInit() {
 
+    this.lectoraFC.valueChanges.subscribe((lectora:any) => this.selectReader())
 
-    this.regionFC.valueChanges.subscribe(region => {
-
-      if(region!='corporativo'){
-        this.apiService.getStoresByRegion(region).subscribe(stores =>{
-          console.log("stores",stores)
-          this.zonas = [];
-          stores.forEach((store:any)=>{
-            if(!this.zonas.find((element:any)=> element.value == store.zona)){
-              let zona = {
-                viewValue:store.zona,value:store.zona
-              }
-              this.zonas.push(zona)
-            }
-          })
-
-          let almacen = {
-            viewValue:'CEDIS',value:'CEDIS'
+    this.apiService.getEstadosValidos().subscribe(
+      (res: string[]) => {
+        console.log("estados", res)
+        this.estados = res.map((estado) => {
+          return {
+            viewValue: estado,
+            value: estado
           }
-          this.zonas.push(almacen)
         })
-      }else{
-        this.zonas = [
-          {
-                viewValue:"directivos",value:"9999"
-          },
-          {
-                viewValue:"coporativo",value:"6666"
-          }
-        ];
       }
+    )
 
-
-
-    })
-    this.lectoraFC.valueChanges.subscribe((lectora:any) => {
-      this.selectReader();
-    })
-    
   }
 
-  selectRegionZona(){
-    this.apiService.getUsersByRegion(this.regionFC.value).subscribe((users:any)=>{
-      
+  selectEstado(){
+    this.apiService.getUsersByEstado(this.estadoFC.value || '').subscribe((users:any)=>{
+      console.log('users', users)
       this.working=false;
       console.log("unfiltered attendees",users)
       this.attendees = users
-      .filter((user:any)=>{
-        let zona = this.zonaFC.value;
-        let inZone = user.organization_role.zona == zona
-        if(zona=="CEDIS"){
-          inZone = !user.organization_role.zona
-        }
-        if(this.regionFC.value == 'expositores'){
-          inZone = true
-
-        }
-        return inZone
-      });
 
       this.attendees.forEach((attendee:any)=>{
-          if(!attendee.organization_role.distrito){
-            attendee.organization_role.distrito='-';
-          }
-          if(!attendee.organization_role.tienda){
-            attendee.organization_role.tienda='-';
-          }
-          if(!attendee.organization_role.zona){
-            attendee.organization_role.zona='';
-          }
-          if(!attendee.organization_role.area){
-            attendee.organization_role.area='';
-          }
-
+        const {pais, titulo, estado, localidad, attendance_type} = attendee.organization_role
+        if(!pais){
+          attendee.organization_role.pais = '-';
+        }
+        if(!estado){
+          attendee.organization_role.estado = '-';
+        }
+        if(!titulo){
+          attendee.organization_role.titulo = '';
+        }
+        if(!localidad){
+          attendee.organization_role.localidad = '-';
+        }
+        if(!attendance_type){
+          attendee.organization_role.attendance_type = '-';
+        }
       })
 
       console.log("attendees",this.attendees)
-      
-      this.attendees= this.attendees.sort((a:any,b:any)=>(a.organization_role.region.localeCompare(b.organization_role.region) 
-        || a.organization_role.zona.localeCompare(b.organization_role.zona)
-        || a.organization_role.distrito.localeCompare(b.organization_role.distrito)
+
+      this.attendees = this.attendees.sort((a:any,b:any)=>(a.organization_role.empresa.localeCompare(b.organization_role.empresa)
+        || a.organization_role.titulo.localeCompare(b.organization_role.titulo)
+        || a.organization_role.pais.localeCompare(b.organization_role.pais)
         || a.user_role.role.localeCompare(b.user_role.role)
-        || a.organization_role.tienda.localeCompare(b.organization_role.tienda)
-        || a.organization_role.area.localeCompare(b.organization_role.area)
+        || a.organization_role.estado.localeCompare(b.organization_role.estado)
+        || a.organization_role.localidad.localeCompare(b.organization_role.localidad)
          ));
-      
+
       //PEDIR LOS DATOS DE TAGS
-      let zona = this.zonaFC.value
-      if(zona == "CEDIS"){
-        zona = '';
-      }
-      if( !zona ){
-        zona = ''
-      }
-      this.apiService.getBadgesByRegionZona(this.regionFC.value, zona).subscribe(badges=>{
-
+      this.apiService.getBadgesByEstado(this.estadoFC.value).subscribe(badges=>{
+        console.log("badges", badges)
         this.attendees.forEach((attendee:any)=>{
-          let badge =badges.find( (badge:any) => badge.user_id == attendee._id);
-
+          let badge = badges.find( (badge:any) => badge.user_id == attendee._id);
           if(badge){
              attendee.tag_id=badge.tag_id
           }
@@ -203,22 +163,20 @@ lectoras:any = [
 
         this.cursor=0;
         this.attendees[this.cursor].isNext=true;
-        
-        this.updateCursor();
-        
-        console.log("cursor",this.cursor);
 
+        this.updateCursor();
+
+        console.log("cursor",this.cursor);
 
       })
 
-      
     })
   }
 
   selectReader(){
     console.log("lectora seleccionada:",this.lectoraFC.value);
     if(this.subscription){
-      this.subscription.unsubscribe();  
+      this.subscription.unsubscribe();
     }
     this.subscription = this._mqttService.observe(this.lectoraFC.value).subscribe((message: IMqttMessage) => {
       this.processMessage(message.payload.toString())
@@ -248,7 +206,7 @@ lectoras:any = [
           this.apiService.addBadge(this.last_tag_id,this.attendees[this.cursor]._id).subscribe(data=>{
             //enviar a imprimir etiqueta
             this.printBadge(this.attendees[this.cursor])
-            
+
 
             this.attendees[this.cursor].tag_id = info.tag_id
             console.log("modified user:",this.attendees[this.cursor]);
@@ -260,7 +218,7 @@ lectoras:any = [
               alert("Este tag ya existe en la BD")
             }
 
-          })          
+          })
 
         }else{
           //fecth user data
@@ -271,34 +229,30 @@ lectoras:any = [
               let info = `USUARIO ENCONTRADO
 
               nombre: ${user.first_name} ${user.last_name}
-              tienda: ${user.organization_role.tienda} 
+              estado: ${user.organization_role.estado}
               tipo: ${user.badge} ${user.user_role.role}
-              rzd: ${user.organization_role.region} ${user.organization_role.zona} ${user.organization_role.distrito}
+              rzd: ${user.organization_role.empresa} ${user.organization_role.titulo} ${user.organization_role.pais}
               llegada: ${user.arrivaldate}
               entrada: ${user.accessdate}
               `
               alert(info);
             }
-            
+
           })
         }
-        
-      
       }
-      
-    }catch(error){
+
+    } catch(error) {
       alert(error)
     }
-    
-
   }
 
   printBadge(attendee:any){
     if(attendee.badge=="azul" ||
       attendee.badge=="negro" ){
-      this.printManagerBadge(attendee);  
+      this.printManagerBadge(attendee);
     }else if (attendee.badge=="rojo" ){
-      this.printAttendeeBadge(attendee);  
+      this.printAttendeeBadge(attendee);
     }else if (attendee.badge=="amarillo"){
       this.printExhibitorBadge(attendee)
     }
@@ -317,7 +271,7 @@ lectoras:any = [
     let cmd ={
       print_type: this.PRINT_TYPE_TITLE_AND_2LINES,
       title: this.titleCasePipe.transform(user.first_name) + ' ' + this.titleCasePipe.transform(user.last_name),
-      line1: user.arrivaldate,    
+      line1: user.arrivaldate,
       line2: user.accessdate
     }
     console.log("print attendee",cmd);
@@ -328,7 +282,7 @@ lectoras:any = [
     let cmd ={
       print_type: this.PRINT_TYPE_TITLE_AND_2LINES,
       title: this.titleCasePipe.transform(user.first_name) + ' ' + this.titleCasePipe.transform(user.last_name),
-      line1: user.organization_role.tienda,    
+      line1: user.organization_role.estado,
       line2: ''
     }
     console.log("print attendee",cmd);
@@ -354,7 +308,7 @@ lectoras:any = [
   }
   advanceCursor(){
     if(this.attendees[this.cursor].isNext){
-        delete this.attendees[this.cursor].isNext;  
+        delete this.attendees[this.cursor].isNext;
     }
     this.cursor++;
     this.attendees[this.cursor].isNext=true;
@@ -368,12 +322,12 @@ lectoras:any = [
       }
     }
     this.updateCursor()
-    
+
   }
   updateCursor(){
     while(this.attendees[this.cursor].tag_id){
       if(this.attendees[this.cursor].isNext){
-        delete this.attendees[this.cursor].isNext;  
+        delete this.attendees[this.cursor].isNext;
       }
       this.cursor++;
       this.attendees[this.cursor].isNext=true;
