@@ -1,0 +1,24 @@
+<div class="main-content">
+  <div class="contsainer-fluid">
+    <div class="row">
+      <div class="col-md-4">
+        <button  class="btn btn-primary btn-lg float-start" [disabled]="importingStores" (click)="importStores()" >
+          <mat-spinner *ngIf="loadingStores"></mat-spinner>
+          IMPORTAR TIENDAS
+        </button>
+      </div>
+      <div class="col-md-4">
+        <button  class="btn btn-primary btn-lg float-start" [disabled]="importingExhibitors" (click)="importExhibitors()" >
+          <mat-spinner *ngIf="loadingExhibitors"></mat-spinner>
+          IMPORTAR EXPOSITORES
+        </button>
+      </div>
+      <div class="col-md-4">
+        <button  class="btn btn-primary btn-lg float-start" [disabled]="importingUsers" (click)="importUsers()" >
+          <mat-spinner *ngIf="loadingUsers"></mat-spinner>
+          IMPORTAR USUARIOS
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

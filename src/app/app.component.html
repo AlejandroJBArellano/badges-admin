@@ -1,16 +1,19 @@
 <div class="main-content">
   <div class="container-fluid">
     <div class="row">
-      <div class="col-md-12">
+      <div class="col-md-10">
         <mat-form-field appearance="fill" class="float-start">
-          <mat-label>Estado</mat-label>
-          <mat-select [formControl]="estadoFC">
-            <mat-option *ngFor="let estado of estados" [value]="estado.value">
-              {{estado.viewValue}}
+          <mat-label>Región</mat-label>
+          <mat-select [formControl]="regionFC">
+            <mat-option *ngFor="let region of regiones" [value]="region.value">
+              {{region.viewValue}}
             </mat-option>
           </mat-select>
         </mat-form-field>
-        <button  class="btn btn-primary btn-lg float-start" (click)="selectEstado()" >SELECCIONAR</button>
+        <button  class="btn btn-primary btn-lg float-start" (click)="selectRegion()" >SELECCIONAR</button>
+      </div>
+      <div class="col-md-2">
+        <button  class="btn btn-primary btn-lg float-start" (click)="openImportDataDialog()" >IMPORTAR DATOS</button>
       </div>
     </div>
     <div class="row">
@@ -22,12 +25,12 @@
               <thead>
                 <tr>
                   <th scope="col">#</th>
-                  <th scope="col">Empresa</th>
-                  <th scope="col">Título</th>
-                  <th scope="col">País</th>
-                  <th scope="col">Estado</th>
-                  <th scope="col">Localidad</th>
-                  <th scope="col">Tipo de asistente</th>
+                  <th scope="col">Región</th>
+                  <th scope="col">Zona</th>
+                  <th scope="col">Distrito</th>
+                  <th scope="col">Tienda</th>
+                  <th scope="col">Área</th>
+                  <th scope="col">Cargo</th>
                   <th scope="col">Perfil</th>
                   <th scope="col">Gafete</th>
                   <th scope="col">TagID</th>
@@ -38,12 +41,12 @@
               <tbody>
                 <tr *ngFor="let attendee of attendees; index as i;" >
                   <th>{{i+1}}</th>
-                  <th>{{attendee.organization_role.empresa}}</th>
-                  <td>{{attendee.organization_role.titulo}}</td>
-                  <td>{{attendee.organization_role.pais}}</td>
-                  <td>{{attendee.organization_role.estado}}</td>
-                  <td>{{attendee.organization_role.localidad}}</td>
-                  <td>{{attendee.organization_role.attendance_type}}</td>
+                  <th>{{attendee.organization_role.region}}</th>
+                  <td>{{attendee.organization_role.zona}}</td>
+                  <td>{{attendee.organization_role.distrito}}</td>
+                  <td>{{attendee.organization_role.tienda}}</td>
+                  <td>{{attendee.organization_role.area}}</td>
+                  <td>{{attendee.organization_role.role}}</td>
                   <td>{{attendee.user_role.role}}</td>
                   <td>{{attendee.badge}}</td>
                   <td>{{attendee.tag_id}}</td>
@@ -54,7 +57,6 @@
                     (click)="printBadge(attendee)">reimprimir</button>
                     <button *ngIf="attendee.tag_id" class="btn btn-sm btn-secondary">Cambiar TAG</button>
                   </td>
-
                 </tr>
               </tbody>
             </table>
