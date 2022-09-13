@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 
 import { Observable, throwError } from 'rxjs';
-import { catchError, retry } from 'rxjs/operators';
 import { environment } from '../environments/environment';
 
 @Injectable({
@@ -18,20 +17,14 @@ export class APIService {
     });
   }
 
-  getUsersByEmpresa(empresa: string): Observable<any> {
-    let reqURL = environment.apiBaseURL + '/empresa';
-    let options = { params: new HttpParams().set('empresa', empresa) };
-    return this.http.get<any>(reqURL, options);
-  }
-
   getUsersById(id: string): Observable<any> {
     let reqURL = environment.apiBaseURL + '/user/' + id;
     return this.http.get<any>(reqURL);
   }
 
-  getStoresByEmpresa(empresa: string): Observable<any> {
+  getStoresByRegion(region: string): Observable<any> {
     let reqURL = environment.apiBaseURL + '/stores';
-    let options = { params: new HttpParams().set('empresa', empresa) };
+    let options = { params: new HttpParams().set('region', region) };
     return this.http.get<any>(reqURL, options);
   }
 
@@ -67,11 +60,6 @@ export class APIService {
   getRegionsAvailables() {
     const reqURL = environment.apiBaseURL + '/regiones';
     return this.http.get<string[]>(reqURL);
-  }
-  getStoresByEstado(estado: string): Observable<any> {
-    let reqURL = environment.apiBaseURL + '/stores';
-    let options = { params: new HttpParams().set('estado', estado) };
-    return this.http.get<any>(reqURL, options);
   }
 
   importExhibitors() {
