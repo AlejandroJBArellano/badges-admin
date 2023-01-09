@@ -4,10 +4,10 @@
 
 export const environment = {
   production: false,
-  mqttServer: 'mqtt.inpulse.mx',
+  mqttServer: '10.10.2.1',
   mqttPath: '/',
-  mqttPort: 8080,
-  apiBaseURL: 'http://localhost:3000',
+  mqttPort: 1884,
+  apiBaseURL:'http://10.10.2.1:3000'
 };
 
 /*

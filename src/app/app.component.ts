@@ -27,6 +27,7 @@ export class AppComponent implements OnInit, OnDestroy {
   cursor: number = 0;
   last_tag_id: any = '00000000';
   regiones: any = [
+    { viewValue: '1000', value: '1000' },
     { viewValue: '1001', value: '1001' },
     { viewValue: '1002', value: '1002' },
     { viewValue: '1003', value: '1003' },
@@ -36,59 +37,39 @@ export class AppComponent implements OnInit, OnDestroy {
     { viewValue: '1007', value: '1007' },
     { viewValue: '1008', value: '1008' },
     { viewValue: '1009', value: '1009' },
+    { viewValue: '1010', value: '1010' },
+    { viewValue: '1011', value: '1011' },
+    { viewValue: '1012', value: '1012' },
     { viewValue: 'corporativo', value: 'corporativo' },
     { viewValue: 'expositores', value: 'expositores' },
   ];
   titulos: any = [{ value: 'CEO', viewValue: 'CEO' }];
   lectoras: any = [
-    { viewValue: 'Pulso016', value: 'inpulse/dt/pulses/Pulso016/tag-id' },
-    { viewValue: 'Pulso075', value: 'inpulse/dt/pulses/Pulso075/tag-id' },
-    { viewValue: 'Pulso073', value: 'inpulse/dt/pulses/Pulso073/tag-id' },
-    { viewValue: 'Pulso048', value: 'inpulse/dt/pulses/Pulso048/tag-id' },
-    { viewValue: 'Pulso024', value: 'inpulse/dt/pulses/Pulso024/tag-id' },
+    { viewValue: 'Pulso022', value: 'inpulse/dt/pulses/Pulso022/tag-id' },
+    { viewValue: 'Pulso068', value: 'inpulse/dt/pulses/Pulso068/tag-id' },
   ];
   impresoras: any = [
     {
-      viewValue: 'lime',
-      value: 'inpulse/cmd/pulses/printer001/print-label/empaquetado/estacion-1',
-    },
-    {
-      viewValue: 'lemon',
-      value: 'inpulse/cmd/pulses/printer002/print-label/empaquetado/estacion-2',
+      viewValue: 'pear',
+      value: 'inpulse/cmd/pulses/pear/print-label/print',
     },
     {
       viewValue: 'apple',
-      value: 'inpulse/cmd/pulses/printer003/print-label/empaquetado/estacion-3',
+      value: 'inpulse/cmd/pulses/apple/print-label/print',
     },
     {
-      viewValue: 'pear',
-      value: 'inpulse/cmd/pulses/printer004/print-label/empaquetado/estacion-4',
+      viewValue: 'lime',
+      value: 'inpulse/cmd/pulses/lime/print-label/print',
     },
+    {
+      viewValue: 'mango',
+      value: 'inpulse/cmd/pulses/mango/print-label/print',
+    },    
     {
       viewValue: 'fig',
-      value: 'inpulse/cmd/pulses/printer005/print-label/empaquetado/estacion-5',
+      value: 'inpulse/cmd/pulses/fig/print-label/print',
     },
 
-    {
-      viewValue: 'Pulso016',
-      value: 'inpulse/cmd/pulses/printer016/print-label/print',
-    },
-    {
-      viewValue: 'Pulso075',
-      value: 'inpulse/cmd/pulses/printer075/print-label/print',
-    },
-    {
-      viewValue: 'Pulso073',
-      value: 'inpulse/cmd/pulses/printer073/print-label/print',
-    },
-    {
-      viewValue: 'Pulso048',
-      value: 'inpulse/cmd/pulses/printer048/print-label/print',
-    },
-    {
-      viewValue: 'Pulso024',
-      value: 'inpulse/cmd/pulses/printer024/print-label/print',
-    },
   ];
 
   regionFC = new UntypedFormControl();
@@ -123,6 +104,14 @@ export class AppComponent implements OnInit, OnDestroy {
       this.selectReader()
     );
 
+    this.apiService.getReadersAndPrinters().subscribe((result:any)=>{
+      if(result.lectoras){
+        this.lectoras=result.lectoras
+      }
+      if(result.impresoras){
+        this.impresoras=result.impresoras
+      }
+    });
     this.apiService.getRegionsAvailables().subscribe((res: string[]) => {
       console.log('regiones', res);
       if (!res) return;
@@ -190,6 +179,12 @@ export class AppComponent implements OnInit, OnDestroy {
               );
               if (badge) {
                 attendee.tag_id = badge.tag_id;
+              }
+              if(attendee.badge=="vip"){
+                attendee.badge="negro"
+              }
+              if(attendee.badge=="all-day"){
+                attendee.badge="azul"
               }
             });
 
@@ -323,8 +318,8 @@ export class AppComponent implements OnInit, OnDestroy {
         this.titleCasePipe.transform(user.first_name) +
         ' ' +
         this.titleCasePipe.transform(user.last_name),
-      line1: user.arrivaldate,
-      line2: user.accessdate,
+      line1: user.arrivaldate?user.arrivaldate:"",
+      line2: user.accessdate?user.arrivaldate:"",
     };
     console.log('print attendee', cmd);
     this.unsafePublish(this.impresoraFC.value, JSON.stringify(cmd));

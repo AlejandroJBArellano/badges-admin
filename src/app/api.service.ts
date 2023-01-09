@@ -74,4 +74,8 @@ export class APIService {
     let reqURL = environment.apiBaseURL + '/insert-users';
     return this.http.get<any>(reqURL).toPromise();
   }
+  getReadersAndPrinters(){
+    const reqURL = environment.apiBaseURL + '/config-registro-en-sitio';
+    return this.http.get<any>(reqURL);
+  }
 }
