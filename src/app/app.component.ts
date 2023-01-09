@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { APIService } from './api.service';
-import { FormControl } from '@angular/forms';
+import { UntypedFormControl } from '@angular/forms';
 import { IMqttMessage, MqttService } from 'ngx-mqtt';
 import { TitleCasePipe } from '@angular/common';
 import { ImportDataComponent } from './dialogs/import-data/import-data.component';
@@ -91,10 +91,10 @@ export class AppComponent implements OnInit, OnDestroy {
     },
   ];
 
-  regionFC = new FormControl();
-  tituloFC = new FormControl();
-  lectoraFC = new FormControl();
-  impresoraFC = new FormControl();
+  regionFC = new UntypedFormControl();
+  tituloFC = new UntypedFormControl();
+  lectoraFC = new UntypedFormControl();
+  impresoraFC = new UntypedFormControl();
 
   working: boolean = false;
 
